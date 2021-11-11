@@ -42,16 +42,34 @@ extension HomeController: UICollectionViewDelegateFlowLayout {
 class VideoCell: UICollectionViewCell {
     let thumbnailImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.backgroundColor = .blue
-        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.image = UIImage(named: "taylor_swift_blank_space")
         return imageView
     }()
     
     let separatorView: UIView = {
         let view = UIView()
-        view.backgroundColor = .blue
-        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .black
         return view
+    }()
+    
+    let userProfileImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.backgroundColor = .green
+        return imageView
+    }()
+    
+    let titleLabel: UILabel = {
+        let label = UILabel()
+        label.backgroundColor = .purple
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    let subtitleTextView: UITextView = {
+        let textView = UITextView()
+        textView.backgroundColor = .red
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        return textView
     }()
     
     override init(frame: CGRect) {
@@ -66,23 +84,43 @@ class VideoCell: UICollectionViewCell {
     func setupViews() {
         addSubview(thumbnailImageView)
         addSubview(separatorView)
+        addSubview(userProfileImageView)
+        addSubview(titleLabel)
+        addSubview(subtitleTextView)
         
-        addConstraints(NSLayoutConstraint.constraints(
-            withVisualFormat: "H:|-16-[v0]-16-|",
-            options: [],
-            metrics: nil,
-            views: ["v0": thumbnailImageView]))
-        addConstraints(NSLayoutConstraint.constraints(
-            withVisualFormat: "H:|[v0]|",
-            options: [],
-            metrics: nil,
-            views: ["v0": separatorView]))
+        addConstraintsWithFormat(format: "H:|-16-[v0]-16-|", views: thumbnailImageView)
+        addConstraintsWithFormat(format: "H:|-16-[v0(44)]", views: userProfileImageView)
+        addConstraintsWithFormat(format: "H:|[v0]|", views: separatorView)
+        addConstraintsWithFormat(
+            format: "V:|-16-[v0]-8-[v1(44)]-16-[v2(1)]|",
+            views: thumbnailImageView, userProfileImageView, separatorView)
         
-        addConstraints(NSLayoutConstraint.constraints(
-            withVisualFormat: "V:|-16-[v0]-16-[v1(1)]|",
-            options: [],
-            metrics: nil,
-            views: ["v0": thumbnailImageView, "v1": separatorView]))
+        addConstraint(NSLayoutConstraint(item: titleLabel, attribute: .top, relatedBy: .equal, toItem: thumbnailImageView, attribute: .bottom, multiplier: 1, constant: 8))
+        addConstraint(NSLayoutConstraint(item: titleLabel, attribute: .leading, relatedBy: .equal, toItem: userProfileImageView, attribute: .trailing, multiplier: 1, constant: 8))
+        addConstraint(NSLayoutConstraint(item: titleLabel, attribute: .trailing, relatedBy: .equal, toItem: thumbnailImageView, attribute: .trailing, multiplier: 1, constant: 0))
+        addConstraint(NSLayoutConstraint(item: titleLabel, attribute: .height, relatedBy: .equal, toItem: self, attribute: .height, multiplier: 0, constant: 20))
+        
+        addConstraint(NSLayoutConstraint(item: subtitleTextView, attribute: .top, relatedBy: .equal, toItem: titleLabel, attribute: .bottom, multiplier: 1, constant: 8))
+        addConstraint(NSLayoutConstraint(item: subtitleTextView, attribute: .leading, relatedBy: .equal, toItem: userProfileImageView, attribute: .trailing, multiplier: 1, constant: 8))
+        addConstraint(NSLayoutConstraint(item: subtitleTextView, attribute: .trailing, relatedBy: .equal, toItem: thumbnailImageView, attribute: .trailing, multiplier: 1, constant: 0))
+        addConstraint(NSLayoutConstraint(item: subtitleTextView, attribute: .height, relatedBy: .equal, toItem: self, attribute: .height, multiplier: 0, constant: 20))
     }
 }
 
+extension UIView {
+    func addConstraintsWithFormat(format: String, views: UIView...) {
+        var viewsDictionary = [String: UIView]()
+        
+        for (index, view) in views.enumerated() {
+            let key = "v\(index)"
+            view.translatesAutoresizingMaskIntoConstraints = false
+            viewsDictionary[key] = view
+        }
+        
+        addConstraints(NSLayoutConstraint.constraints(
+            withVisualFormat: format,
+            options: [],
+            metrics: nil,
+            views: viewsDictionary))
+    }
+}
